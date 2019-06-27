@@ -1,5 +1,6 @@
 package com.jmd;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -106,7 +107,7 @@ public class BaseActivity extends AppCompatActivity
         if (id == R.id.nav_add_promo) {
             getSupportFragmentManager().beginTransaction().replace(container.getId(), new ManterPromocaoFragment()).commit();
         } else if (id == R.id.nav_promocoes) {
-
+            startActivity(new Intent(this, LoginActivity.class));
         } else if (id == R.id.nav_logout) {
 
         }
