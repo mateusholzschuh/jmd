@@ -13,9 +13,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.FrameLayout;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.jmd.fragments.ManterPromocaoFragment;
+import com.jmd.modelo.Promocao;
 
 public class BaseActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    protected FrameLayout container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,11 +31,28 @@ public class BaseActivity extends AppCompatActivity
         setContentView(R.layout.activity_base);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        container = findViewById(R.id.base_container);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                // Write a message to the database
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("promo");
+
+                Promocao promo = new Promocao();
+                //promo.setUid(database.getReference().push().getKey()); // uuid from firebase
+                promo.setNome("Açúcar Cristal ABC 5kg");
+                promo.setDescricao("breve descrição");
+                promo.setPreco(11.99f);
+                promo.setImagem("url..");
+
+                myRef.child(myRef.push().getKey())
+                        .setValue(promo);
+
+                Snackbar.make(view, "Teste do firebase. Request sent", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -79,7 +104,7 @@ public class BaseActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_add_promo) {
-            // Handle the camera action
+            getSupportFragmentManager().beginTransaction().replace(container.getId(), new ManterPromocaoFragment()).commit();
         } else if (id == R.id.nav_promocoes) {
 
         } else if (id == R.id.nav_logout) {

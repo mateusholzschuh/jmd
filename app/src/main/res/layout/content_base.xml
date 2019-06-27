@@ -8,4 +8,10 @@
     tools:context=".BaseActivity"
     tools:showIn="@layout/app_bar_base">
 
+    <FrameLayout
+        android:id="@+id/base_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>
