@@ -2,8 +2,10 @@ package com.jmd;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,9 +20,13 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.jmd.fragments.ManterPromocaoFragment;
+import com.jmd.modelo.Mercado;
 import com.jmd.modelo.Promocao;
 
 public class BaseActivity extends AppCompatActivity
@@ -28,6 +34,8 @@ public class BaseActivity extends AppCompatActivity
 
     protected FrameLayout container;
     FirebaseAuth auth;
+    FirebaseDatabase database;
+    Mercado user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,29 +47,16 @@ public class BaseActivity extends AppCompatActivity
         container = findViewById(R.id.base_container);
 
         auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Write a message to the database
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("promo");
 
-                Promocao promo = new Promocao();
-                //promo.setUid(database.getReference().push().getKey()); // uuid from firebase
-                promo.setNome("Açúcar Cristal ABC 5kg");
-                promo.setDescricao("breve descrição");
-                promo.setPreco(11.99f);
-                promo.setImagem("url..");
-
-                myRef.child(myRef.push().getKey())
-                        .setValue(promo);
-
-                Snackbar.make(view, "Teste do firebase. Request sent", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -113,11 +108,12 @@ public class BaseActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(container.getId(), new ManterPromocaoFragment()).commit();
 
         } else if (id == R.id.nav_promocoes) {
-            startActivity(new Intent(this, LoginActivity.class));
+            //startActivity(new Intent(this, LoginActivity.class));
 
         } else if (id == R.id.nav_logout) {
             if (auth.getCurrentUser() != null) {
                 auth.signOut();
+                finish();
                 Toast.makeText(this, "Logout ok", Toast.LENGTH_SHORT).show();
             }
         }

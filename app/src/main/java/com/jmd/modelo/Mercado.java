@@ -58,4 +58,16 @@ public class Mercado {
     public void setFoto(String foto) {
         this.foto = foto;
     }
+
+    @Override
+    public String toString() {
+        return "Mercado{" +
+                "uuid='" + uuid + '\'' +
+                ", nome='" + nome + '\'' +
+                ", telefone='" + telefone + '\'' +
+                ", endereco='" + endereco + '\'' +
+                ", logo='" + logo + '\'' +
+                ", foto='" + foto + '\'' +
+                '}';
+    }
 }

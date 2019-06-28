@@ -101,7 +101,7 @@ public class CadastrarActivity extends AppCompatActivity {
                     // salva informações sobre o mercado no banco
                     DatabaseReference mercadoRef = database.getReference("mercados");
                     // novo nó
-                    mercadoRef = mercadoRef.child(mercadoRef.push().getKey());
+                    mercadoRef = mercadoRef.child(auth.getCurrentUser().getUid());
 
                     mercadoRef.setValue(mercado).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

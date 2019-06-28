@@ -74,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(i);
                 } else {
                     // problema no login
+                    Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     Log.d("FireAuth", task.getException().getMessage());
                 }
             }

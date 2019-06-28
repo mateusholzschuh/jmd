@@ -10,6 +10,15 @@ public class Promocao {
     private String imagem;
     private Float  preco;
     private String validade;
+    private String mercadoUID;
+
+    public String getMercadoUID() {
+        return mercadoUID;
+    }
+
+    public void setMercadoUID(String mercadoUID) {
+        this.mercadoUID = mercadoUID;
+    }
 
     public String getUid() {
         return uid;
