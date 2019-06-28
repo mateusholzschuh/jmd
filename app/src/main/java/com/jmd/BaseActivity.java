@@ -15,7 +15,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.jmd.fragments.ManterPromocaoFragment;
@@ -25,6 +27,7 @@ public class BaseActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     protected FrameLayout container;
+    FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,8 @@ public class BaseActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         container = findViewById(R.id.base_container);
+
+        auth = FirebaseAuth.getInstance();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -106,10 +111,15 @@ public class BaseActivity extends AppCompatActivity
 
         if (id == R.id.nav_add_promo) {
             getSupportFragmentManager().beginTransaction().replace(container.getId(), new ManterPromocaoFragment()).commit();
+
         } else if (id == R.id.nav_promocoes) {
             startActivity(new Intent(this, LoginActivity.class));
-        } else if (id == R.id.nav_logout) {
 
+        } else if (id == R.id.nav_logout) {
+            if (auth.getCurrentUser() != null) {
+                auth.signOut();
+                Toast.makeText(this, "Logout ok", Toast.LENGTH_SHORT).show();
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

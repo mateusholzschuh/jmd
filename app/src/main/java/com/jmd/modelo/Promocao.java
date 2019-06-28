@@ -9,7 +9,7 @@ public class Promocao {
     private String descricao;
     private String imagem;
     private Float  preco;
-    private Date   validade;
+    private String validade;
 
     public String getUid() {
         return uid;
@@ -51,11 +51,11 @@ public class Promocao {
         this.preco = preco;
     }
 
-    public Date getValidade() {
+    public String getValidade() {
         return validade;
     }
 
-    public void setValidade(Date validade) {
+    public void setValidade(String validade) {
         this.validade = validade;
     }
 }
