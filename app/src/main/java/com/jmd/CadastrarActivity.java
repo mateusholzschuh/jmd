@@ -2,6 +2,7 @@ package com.jmd;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,7 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.jmd.modelo.Mercado;
 
-public class CadastrarActivity extends AppCompatActivity {
+public class CadastrarActivity extends ActivityFirebase {
 
     protected EditText aliasNome,
                         aliasEmail,
@@ -32,14 +33,14 @@ public class CadastrarActivity extends AppCompatActivity {
                      aliasBtnRegistrar,
                      aliasBtnVoltar;
 
-    private FirebaseAuth auth;
-    private FirebaseDatabase database;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastrar);
 
+        /**
+         * Campos da activity
+         */
         aliasNome     = findViewById(R.id.editCadastroNome);
         aliasEmail    = findViewById(R.id.editCadastroEmail);
         aliasSenha    = findViewById(R.id.editCadastroSenha);
@@ -51,16 +52,50 @@ public class CadastrarActivity extends AppCompatActivity {
         aliasBtnRegistrar = findViewById(R.id.btnCadastroCadastrar);
         aliasBtnVoltar    = findViewById(R.id.btnCadastroVoltar);
 
+        /**
+         * Progressbar
+         */
+        progressBar = findViewById(R.id.progressBarCadastrar);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.GONE);
+
+        /**
+         * Firebase instances
+         */
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
 
         /**
          * Botão de cadastar.
          */
+
         aliasBtnRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cadastrarUsuario(aliasEmail.getText().toString(), aliasSenha.getText().toString());
+                // TODO: Implementar verificação dos campos
+                String nome, email, senha, endereco, telefone, gps;
+
+                nome  = aliasNome.getText().toString();
+                email = aliasEmail.getText().toString();
+                senha = aliasSenha.getText().toString();
+                gps   = aliasGPS.getText().toString();
+                endereco = aliasEndereco.getText().toString();
+                telefone = aliasTelefone.getText().toString();
+                
+                if (nome == null || email == null || senha == null || 
+                    gps == null || endereco == null || telefone == null ||
+                    nome.equals("") || email.equals("") || senha.equals("") || gps.equals("") ||
+                    endereco.equals("") || telefone.equals(""))
+                {
+                    Toast.makeText(CadastrarActivity.this, "Todos os campos são OBRIGATÓRIOS", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // mostra progressbar
+                progressBar.setVisibility(View.VISIBLE);
+
+                // tenta cadastrar
+                cadastrarUsuario(email, senha, nome, endereco, telefone, gps);
             }
         });
 
@@ -70,7 +105,8 @@ public class CadastrarActivity extends AppCompatActivity {
         aliasBtnBuscarGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // mostra progressbar
+                progressBar.setVisibility(View.VISIBLE);
             }
         });
 
@@ -85,32 +121,46 @@ public class CadastrarActivity extends AppCompatActivity {
         });
     }
 
-    private void cadastrarUsuario(String email, String senha) {
+    private void cadastrarUsuario(String email, String senha, final String nome,
+                                  final String endereco, final String telefone, final String gps) {
         final AlertDialog.Builder b = new AlertDialog.Builder(this);
 
 
         auth.createUserWithEmailAndPassword(email, senha).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+
+                // verifica resposta do firebase
                 if (task.isSuccessful()) {
+                    // tenta inserir demais campos
                     Mercado mercado = new Mercado();
-                    mercado.setNome(aliasNome.getText().toString());
-                    mercado.setEndereco(aliasEndereco.getText().toString());
-                    mercado.setTelefone(aliasTelefone.getText().toString());
+                    mercado.setNome(nome);
+                    mercado.setEndereco(endereco);
+                    mercado.setTelefone(telefone);
+//                    mercado.setLocation(); ???
 
                     // salva informações sobre o mercado no banco
                     DatabaseReference mercadoRef = database.getReference("mercados");
+
                     // novo nó
                     mercadoRef = mercadoRef.child(auth.getCurrentUser().getUid());
 
                     mercadoRef.setValue(mercado).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+                            // esconde progressbar
+                            progressBar.setVisibility(View.GONE);
+
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 b.setTitle("Usuario criado");
                                 b.setMessage(auth.getCurrentUser().toString()+"\n"+auth.getCurrentUser().getEmail());
                                 b.show();
+
+                                // usuario cadastrado
+                                // abre activity principal
+                                Intent i = new Intent(getBaseContext(), BaseActivity.class);
+                                startActivity(i);
                             } else {
                                 b.setTitle("Ops");
                                 b.setMessage("Ocorreu um problema ao efetuar o cadastro");

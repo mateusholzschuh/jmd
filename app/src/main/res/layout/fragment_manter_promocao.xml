@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.ManterPromocaoFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageManterProduto"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_menu_gallery" />
+
+        <ProgressBar
+            android:id="@+id/progressBarManter"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/editManterNome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Nome do produto"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/editManterPreco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Preço"
+            android:inputType="numberDecimal" />
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/editManterValidade"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:ems="10"
+                android:enabled="false"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
+                android:freezesText="false"
+                android:hint="Validade da promoção"
+                android:inputType="date"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnManterDate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnManterDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_date_range_black_24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <EditText
+            android:id="@+id/editManterDescricao"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="Descrição (opcional)"
+            android:inputType="textMultiLine"
+            android:singleLine="false" />
+
+        <Button
+            android:id="@+id/btnManterSalvar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salvar (temporario)" />
+    </LinearLayout>
+</FrameLayout>
