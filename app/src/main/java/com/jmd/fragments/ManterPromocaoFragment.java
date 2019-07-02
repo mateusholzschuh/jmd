@@ -11,6 +11,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -99,8 +102,46 @@ public class ManterPromocaoFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.base, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_remove) {
+            if ( promocao.getUid() != null && !promocao.getUid().isEmpty() ) {
+                if(((BaseActivity) getActivity()) != null)
+                    ((BaseActivity) getActivity()).toggleProgressbar(true);
+                PromocaoDAO.getInstance().apagar(promocao, getActivity(), new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        Toast.makeText(getContext(), "Promoção apagada com sucesso", Toast.LENGTH_SHORT).show();
+                        if(((BaseActivity) getActivity()) != null)
+                            ((BaseActivity) getActivity()).toggleProgressbar(false);
+
+                        getActivity().getSupportFragmentManager()
+                                .beginTransaction().replace(R.id.base_container, new ListarPromocoesFragment())
+                                .commit();
+                    }
+                });
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.fragment_manter_promocao, container, false);
 
         /**
