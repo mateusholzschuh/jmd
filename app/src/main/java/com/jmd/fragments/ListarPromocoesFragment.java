@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,12 +22,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jmd.BaseActivity;
+import com.jmd.ListEmptyFragment;
 import com.jmd.R;
 import com.jmd.adaptadores.PromocaoAdapter;
 import com.jmd.modelo.Promocao;
 import com.jmd.persistencia.PromocaoDAO;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -34,6 +38,8 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class ListarPromocoesFragment extends Fragment {
+
+    protected SwipeRefreshLayout swipe;
 
     protected RecyclerView aliasRecycler;
     protected List<Promocao> listPromocoes;
@@ -89,6 +95,16 @@ public class ListarPromocoesFragment extends Fragment {
             }
         });
 
+        /**
+         * SwipeRefresh
+         */
+        swipe = v.findViewById(R.id.swipeListar);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                PromocaoDAO.getInstance().buscarTodos(recuperaDados());
+            }
+        });
 
         aliasRecycler = v.findViewById(R.id.recyclerListarPromocoes);
         promocao = new Promocao();
@@ -165,9 +181,29 @@ public class ListarPromocoesFragment extends Fragment {
                     listPromocoes.add(promo);
                 }
 
+//                listPromocoes.sort(new Comparator<Promocao>() {
+//                    @Override
+//                    public int compare(Promocao o1, Promocao o2) {
+//                        return (int) (o2.getTimestamp()-o1.getTimestamp());
+//                    }
+//                });
+                Collections.sort(listPromocoes);
+
+                // se não tem promoções carregadas ainda, carrega o fragment de msg
+                // carrega fragment
+                if (listPromocoes.isEmpty()) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.base_container, new ListEmptyFragment())
+                            .commit();
+                }
+
                 adapter.notifyDataSetChanged();
                 if(((BaseActivity) getActivity()) != null)
                     ((BaseActivity) getActivity()).toggleProgressbar(false);
+
+                // swipe
+                if (swipe.isRefreshing())
+                    swipe.setRefreshing(false);
             }
 
             @Override
@@ -175,6 +211,10 @@ public class ListarPromocoesFragment extends Fragment {
                 Toast.makeText(getContext(), "Ops! Ocorreu um erro.", Toast.LENGTH_SHORT).show();
                 if(((BaseActivity) getActivity()) != null)
                     ((BaseActivity) getActivity()).toggleProgressbar(false);
+
+                // swipe
+                if (swipe.isRefreshing())
+                    swipe.setRefreshing(false);
             }
         };
     }

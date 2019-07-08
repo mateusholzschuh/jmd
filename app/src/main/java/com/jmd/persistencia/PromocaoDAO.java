@@ -50,24 +50,73 @@ public class PromocaoDAO {
         ref.child(key).setValue(promocao).addOnCompleteListener(activity, listener);
     }
 
+    /**
+     * <h1>Remove uma promoção.</h1>
+     * @param promocao A promocao a ser removida
+     * @param activity A activity do contexto atual
+     * @param listener Callback da resposta
+     */
     public void apagar (final Promocao promocao, final Activity activity, final OnCompleteListener listener) {
+        // pega referencia da promo
         ref = database.getReference(PROMO).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        // pega ref da imagem da promo
         StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(promocao.getImagem());
+        // deleta imagem primeiro
         imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                // remove nó da promo
                 ref.child(promocao.getUid()).removeValue().addOnCompleteListener(activity, listener);
             }
         });
     }
 
+    /**
+     * <h1>Buscar uma promoção pelo <i>UUID</i> dela.</h1>
+     * @param uuid ID da promoção
+     * @param listener Callback da busca
+     */
     public void buscar (String uuid, ValueEventListener listener) {
         ref = database.getReference(PROMO).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         ref.child(uuid).addListenerForSingleValueEvent(listener);
     }
 
+    /**
+     * <h1>Buscar todas as promoções do mercado que está logado no sistema.</h1>
+     * @param listener Callback da busca
+     */
     public void buscarTodos (ValueEventListener listener) {
         ref = database.getReference(PROMO).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         ref.addListenerForSingleValueEvent(listener);
+    }
+
+    /**
+     * <h1>Buscar todas as promoções do mercado que está logado no sistema, e manter sincronizado com o firebase.</h1>
+     * @param listener Callback da busca
+     */
+    public void buscarTodosSincronizado (ValueEventListener listener) {
+        ref = database.getReference(PROMO).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        ref.addValueEventListener(listener);
+    }
+
+    /**
+     * <h1>Buscar todas as promoções do mercado com o <b>UUID</b> passado como parâmetro.</h1>
+     * @param uuidMercado ID do mercado
+     * @param listener Callback da busca
+     */
+    public void buscarTodas (String uuidMercado, ValueEventListener listener) {
+        ref = database.getReference(PROMO).child(uuidMercado);
+        ref.addListenerForSingleValueEvent(listener);
+    }
+
+    /**
+     * <h1>Buscar todas as promoções do mercado com o <i>UUID</i> passado como parâmetro, e manter sincronizado com o firebase.</h1>
+     * @param uuidMercado ID do mercado
+     * @param listener Callback da busca
+     */
+    public void buscarTodasSincronizado (String uuidMercado, ValueEventListener listener) {
+        ref = database.getReference(PROMO).child(uuidMercado);
+
+        ref.addValueEventListener(listener);
     }
 }

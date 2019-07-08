@@ -103,12 +103,12 @@ public class LoginActivity extends ActivityFirebase {
                 if (task.isSuccessful()) {
 
                     // usuario logou
-                    Toast.makeText(LoginActivity.this, "Login feito com sucesso", Toast.LENGTH_SHORT).show();
 
                     // abre activity interna
                     Intent i = new Intent(getBaseContext(), BaseActivity.class);
                     startActivity(i);
 
+                    Toast.makeText(LoginActivity.this, "Login feito com sucesso", Toast.LENGTH_SHORT).show();
                     // fecha activity do login
                     finish();
                 } else {

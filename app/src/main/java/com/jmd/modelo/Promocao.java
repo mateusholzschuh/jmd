@@ -1,15 +1,28 @@
 package com.jmd.modelo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
-public class Promocao {
+public class Promocao implements Comparable<Promocao> {
 
     private String uid;
     private String nome;
     private String descricao;
     private String imagem;
     private Float  preco;
-    private String validade;
+    private Long validade;
+    private Long timestamp;
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     private String mercadoUID;
 
     public String getMercadoUID() {
@@ -60,11 +73,16 @@ public class Promocao {
         this.preco = preco;
     }
 
-    public String getValidade() {
+    public Long getValidade() {
         return validade;
     }
 
-    public void setValidade(String validade) {
+    public void setValidade(Long validade) {
         this.validade = validade;
+    }
+
+    @Override
+    public int compareTo(Promocao o) {
+        return (int) (o.getTimestamp()-this.getTimestamp());
     }
 }

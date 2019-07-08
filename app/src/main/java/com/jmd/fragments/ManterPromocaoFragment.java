@@ -43,6 +43,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.jmd.BaseActivity;
 import com.jmd.R;
+import com.jmd.Uteis;
 import com.jmd.modelo.Promocao;
 import com.jmd.persistencia.PromocaoDAO;
 import com.squareup.picasso.Picasso;
@@ -104,7 +105,9 @@ public class ManterPromocaoFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.base, menu);
+        // se carregou alguma promoção, mostra o botão de deletar
+        if (getArguments() != null)
+            inflater.inflate(R.menu.base, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -345,17 +348,6 @@ public class ManterPromocaoFragment extends Fragment {
         };
     }
 
-    private Date formataData(String string) {
-        try {
-            String myFormat = "dd/MM/yyyy";
-            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
-            return sdf.parse(string);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private void salvarPromocao () {
         // TODO: fazer verificação/validação dos campos!
         String nome, descricao, validade, preco;
@@ -379,7 +371,8 @@ public class ManterPromocaoFragment extends Fragment {
         promocao.setNome(nome);
         promocao.setPreco(Float.valueOf(preco));
         promocao.setDescricao(descricao);
-        promocao.setValidade(validade);
+        promocao.setValidade(myCalendar.getTimeInMillis());
+        promocao.setTimestamp(new Date().getTime());
 
         ((BaseActivity) getActivity()).toggleProgressbar(true);
 
@@ -497,11 +490,11 @@ public class ManterPromocaoFragment extends Fragment {
 
     private void atualizaCampos (Promocao p) {
         aliasNome.setText(p.getNome());
-        aliasValidade.setText(p.getValidade());
+        aliasValidade.setText(Uteis.formataDataParaString(p.getValidade()));
         aliasDescricao.setText(p.getDescricao());
         aliasPreco.setText(p.getPreco().toString());
 
-        myCalendar.setTime(formataData(p.getValidade()));
+        myCalendar.setTime(Uteis.formataData(p.getValidade()));
     }
 
 }

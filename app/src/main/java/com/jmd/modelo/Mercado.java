@@ -4,12 +4,29 @@ public class Mercado {
 
     private String uuid;
     private String nome;
+    private String email;
     private String telefone;
     private String endereco;
     private String logo;
     private String foto;
     // Location?
+    private Local local;
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Local getLocal() {
+        return local;
+    }
+
+    public void setLocal(Local local) {
+        this.local = local;
+    }
 
     public String getUuid() {
         return uuid;

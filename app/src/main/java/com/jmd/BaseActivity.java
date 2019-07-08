@@ -2,6 +2,7 @@ package com.jmd;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -17,7 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.jmd.fragments.ListarPromocoesFragment;
 import com.jmd.fragments.ManterPromocaoFragment;
 import com.jmd.modelo.Mercado;
@@ -48,6 +52,24 @@ public class BaseActivity extends ActivityFirebase
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
 
+        final String uuid = auth.getCurrentUser().getUid();
+        final String uemail = auth.getCurrentUser().getEmail();
+
+        database.getReference("mercados").child(uuid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(Mercado.class);
+                user.setUuid(uuid);
+                user.setEmail(uemail);
+                updateUI(user);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                auth.signOut();
+                finish();
+            }
+        });
 
 
         /**
@@ -71,8 +93,14 @@ public class BaseActivity extends ActivityFirebase
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
 
+        name  = headerView.findViewById(R.id.nav_name);
+        email = headerView.findViewById(R.id.nav_email);
 
+        /**
+         * Abre a lista de promoções do mercado
+         */
         getSupportFragmentManager().beginTransaction()
                 .replace(container.getId(), new ListarPromocoesFragment())
                 .commit();
@@ -81,9 +109,23 @@ public class BaseActivity extends ActivityFirebase
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        // se o navigation drawer ta aberto, entao fecha
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+
+        // se tiver algum fragment aberto e que não seja o da lista, infla o fragment do listar
+        } else if (getSupportFragmentManager().getFragments().get(0) != null &&
+                ListarPromocoesFragment.class != getSupportFragmentManager().getFragments().get(0).getClass()) {
+            // troca o fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(container.getId(), new ListarPromocoesFragment())
+                    .commit();
+
+        // caso contrario, fecha o app
         } else {
+//            String s = getSupportFragmentManager().getFragments().get(0).getClass().getSimpleName();
+//            Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
             super.onBackPressed();
         }
     }
@@ -121,5 +163,10 @@ public class BaseActivity extends ActivityFirebase
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void updateUI(Mercado user) {
+        name.setText(user.getNome());
+        email.setText(user.getEmail());
     }
 }

@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jmd.R;
+import com.jmd.Uteis;
 import com.jmd.modelo.Promocao;
 import com.squareup.picasso.Picasso;
 
@@ -46,8 +47,8 @@ public class PromocaoAdapter extends RecyclerView.Adapter<PromocaoAdapter.Promoc
         Promocao c = promocoes.get(position);
         // Atualizada os valores nas views
         holder.tNome.setText(c.getNome());
-        holder.tPreco.setText("R$ " + c.getPreco().toString());
-        holder.tValidade.setText("VALIDA ATÉ:\n" + c.getValidade());
+        holder.tPreco.setText(String.format("R$ %.2f", c.getPreco()));
+        holder.tValidade.setText("VALIDA ATÉ:\n" + Uteis.formataDataParaString(c.getValidade()));
 
 //        TODO: IMPLEMENTAR COM FIREBASE STORAGE !!!
 //        if (c.getFoto()!= null) {
