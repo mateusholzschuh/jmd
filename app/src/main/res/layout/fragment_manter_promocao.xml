@@ -86,6 +86,7 @@
             android:id="@+id/btnManterSalvar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Salvar (temporario)" />
+            android:text="Salvar (temporario)"
+            android:visibility="invisible" />
     </LinearLayout>
 </FrameLayout>
